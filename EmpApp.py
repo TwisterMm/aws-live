@@ -100,5 +100,10 @@ def DeleteEmp():
     print("all modification done...")
     return "Deleted employee with id: " + emp_id
 
+
+@app.route("/getemp", methods=['POST'])
+def GetEmp():
+    return render_template('GetEmp.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

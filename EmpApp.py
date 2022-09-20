@@ -105,5 +105,25 @@ def DeleteEmp():
 def GetEmp():
     return render_template('GetEmp.html')
 
+@app.route("/fetchdata", methods=['POST'])
+def GetEmpOutput():
+    emp_id = request.form['emp_id']
+    select_sql = "SELECT * FROM employee WHERE emp_id = %s"
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(select_sql, (emp_id))
+        db_conn.commit()
+        print("Data fetched from MySQL RDS... fetching image from S3...")
+        emp_image_file_name_in_s3 = "emp-id-" + str(emp_id) + "_image_file"
+        s3 = boto3.resource('s3')
+        s3.Bucket(custombucket).download_file(emp_image_file_name_in_s3, emp_image_file_name_in_s3)
+
+    finally:
+        cursor.close()
+
+    print("all modification done...")
+    return render_template('GetEmpOutput.html', emp_id=emp_id, emp_image_file_name_in_s3=emp_image_file_name_in_s3)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

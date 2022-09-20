@@ -80,6 +80,25 @@ def AddEmp():
     print("all modification done...")
     return render_template('AddEmpOutput.html', name=emp_name)
 
+@app.route("/deletemp", methods=['POST'])
+def DeleteEmp():
+    emp_id = request.form['emp_id']
+    delete_sql = "DELETE FROM employee WHERE emp_id = %s"
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(delete_sql, (emp_id))
+        db_conn.commit()
+        print("Data deleted from MySQL RDS... deleting image from S3...")
+        emp_image_file_name_in_s3 = "emp-id-" + str(emp_id) + "_image_file"
+        s3 = boto3.resource('s3')
+        s3.Object(custombucket, emp_image_file_name_in_s3).delete()
+
+    finally:
+        cursor.close()
+
+    print("all modification done...")
+    return "Deleted employee with id: " + emp_id
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

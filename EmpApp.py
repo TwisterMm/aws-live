@@ -117,9 +117,9 @@ def GetEmpOutput():
         print("Data fetched from MySQL RDS... fetching image from S3...")
         (emp_id, first_name, last_name, pri_skill, location) = cursor.fetchone()
         
-        # emp_image_file_name_in_s3 = "emp-id-" + str(emp_id) + "_image_file"
-        # s3 = boto3.resource('s3')
-        # s3.Bucket(custombucket).download_file(emp_image_file_name_in_s3, emp_image_file_name_in_s3)
+        emp_image_file_name_in_s3 = "emp-id-" + str(emp_id) + "_image_file"
+        s3 = boto3.resource('s3')
+        s3.Bucket(custombucket).download_file(emp_image_file_name_in_s3, emp_image_file_name_in_s3)
 
     finally:
         cursor.close()
